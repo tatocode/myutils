@@ -1,12 +1,10 @@
 import torch
 
 class MyTrainer():
-    def __init__(self, train_loader, val_loader, num_epochs, batch_size, learning_rate, model, optim, loss_func, acc_func, device):
+    def __init__(self, train_loader, val_loader, num_epochs, model, optim, loss_func, acc_func, device):
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.num_epochs = num_epochs
-        self.batch_size = batch_size
-        self.learning_rete = learning_rate
         self.model = model
         self.optim = optim
         self.loss_func = loss_func
