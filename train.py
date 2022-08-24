@@ -14,6 +14,7 @@ class MyTrainer():
         self.model = model.to(self.device)
 
     def train(self, save_weight=True):
+        print(f'use device: {self.device}')
         max_acc = 0
         for epoch in range(self.num_epochs):
             num = 0
