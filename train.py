@@ -1,17 +1,15 @@
 import torch
 
 class MyTrainer():
-    def __init__(self, train_loader, val_loader, num_epochs, model, optim, loss_func, acc_func, device):
-        self.train_loader = train_loader
-        self.val_loader = val_loader
-        self.num_epochs = num_epochs
-        self.model = model
-        self.optim = optim
-        self.loss_func = loss_func
-        self.acc_func = acc_func
-        self.device = device
-
-        self.model = model.to(self.device)
+    def __init__(self, train_config_dict):
+        self.train_loader = train_config_dict['train_loader']
+        self.val_loader = train_config_dict['val_loader']
+        self.num_epochs = train_config_dict['num_epochs']
+        self.optim = train_config_dict['optim']
+        self.loss_func = train_config_dict['loss_func']
+        self.acc_func = train_config_dict['acc_func']
+        self.device = train_config_dict['device']
+        self.model = train_config_dict['model'].to(self.device)
 
     def train(self, save_weight=True):
         print(f'use device: {self.device}')
