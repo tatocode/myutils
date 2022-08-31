@@ -21,7 +21,7 @@ class DrawConfusionMatrix:
         :return:
         """
         for predict, label in zip(predicts, labels):
-            self.matrix[predict, label] += 1
+            self.matrix[label, predict] += 1
 
     def getMatrix(self,normalize=True):
         """
@@ -46,7 +46,7 @@ class DrawConfusionMatrix:
         plt.xlabel("Predict label")
         plt.ylabel("Truth label")
         plt.yticks(range(self.num_classes), self.labels_name)  # y轴标签
-        plt.xticks(range(self.num_classes), self.labels_name, rotation=45)  # x轴标签
+        plt.xticks(range(self.num_classes), self.labels_name)  # x轴标签
 
         for x in range(self.num_classes):
             for y in range(self.num_classes):
