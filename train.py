@@ -1,3 +1,6 @@
+import logging
+import os
+from utils import draw
 import torch
 
 class MyTrainer():
@@ -11,9 +14,15 @@ class MyTrainer():
         self.device = train_config_dict['device']
         self.model = train_config_dict['model'].to(self.device)
 
-    def train(self, save_weight=True):
+    def train(self, home_dir, save_weight=True, print_log=True):
         print(f'use device: {self.device}')
         max_acc = 0
+        if print_log:
+            logger = logging.getLogger()
+        train_loss = []
+        val_acc = []
+        if not os.path.exists(os.path.join(home_dir, 'weights')) :
+            os.mkdir(os.path.join(home_dir, 'weights'))
         for epoch in range(self.num_epochs):
             num = 0
             num_loss = 0
@@ -30,7 +39,11 @@ class MyTrainer():
                 num_loss += loss.item()
                 num += 1
             average_loss = num_loss/num
-            print(f'{epoch+1}th epoch average loss: {average_loss:.4f}')
+            train_loss.append(average_loss)
+            if print_log:
+                logger.info(f'train|epoch:{epoch+1}\t loss:{average_loss:.4f}')
+            else:
+                print(f'{epoch+1}th epoch average loss: {average_loss:.4f}')
 
             if self.val_loader is not None:
                 self.model.eval()
@@ -45,19 +58,24 @@ class MyTrainer():
                         num_acc += acc
                         num += 1
                 average_acc = num_acc/num
-                print(f'{epoch+1}th epoch average acc: {average_acc:.4f}')
+                val_acc.append(average_acc)
+                if print_log:
+                    logger.info(f'val|epoch:{epoch+1}\t loss:{average_acc:.4f}')
+                else:
+                    print(f'{epoch+1}th epoch average acc: {average_acc:.4f}')
 
                 if save_weight:
                     if epoch == 0:
-                        torch.save(self.model.state_dict(), 'weights/best.pth')
-                        torch.save(self.model.state_dict(), 'weights/last.pth')
+                        torch.save(self.model.state_dict(), os.path.join(home_dir, 'weights/best.pth'))
+                        torch.save(self.model.state_dict(), os.path.join(home_dir, 'weights/last.pth'))
                         max_acc = average_acc
                     else:
                         if average_acc > max_acc:
-                            torch.save(self.model.state_dict(), 'weights/best.pth')
-                        torch.save(self.model.state_dict(), 'weights/last.pth')
+                            torch.save(self.model.state_dict(), os.path.join(home_dir, 'weights/best.pth'))
+                        torch.save(self.model.state_dict(), os.path.join(home_dir, 'weights/last.pth'))
 
             elif save_weight:
                 save = 20
                 if epoch % save == 0:
-                    torch.save(self.model.state_dict(), f'weights/epoch_{epoch+1}.pth')
+                    torch.save(self.model.state_dict(), os.path.join(home_dir, f'weights/epoch_{epoch+1}.pth'))
+        draw.draw_train_val_graph(train_loss, val_acc, home_dir)
