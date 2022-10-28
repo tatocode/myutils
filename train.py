@@ -1,5 +1,8 @@
-import logging
+from utils import logging
 import os
+
+import torchvision.utils
+
 from utils import draw
 import torch
 
@@ -14,13 +17,15 @@ class MyTrainer():
         self.device = train_config_dict['device']
         self.model = train_config_dict['model'].to(self.device)
 
-    def train(self, home_dir, save_weight=True, print_log=True):
+    def train(self, home_dir, save_weight=True, print_log=True, show_val=True):
         print(f'use device: {self.device}')
         max_acc = 0
         if print_log:
-            logger = logging.getLogger()
+            logger = logging.getLogger(home_dir)
         train_loss = []
         val_acc = []
+        if not os.path.exists(home_dir):
+            os.mkdir(home_dir)
         if not os.path.exists(os.path.join(home_dir, 'weights')) :
             os.mkdir(os.path.join(home_dir, 'weights'))
         for epoch in range(self.num_epochs):
@@ -30,6 +35,7 @@ class MyTrainer():
             for idx, data in enumerate(self.train_loader):
                 img, label = data[0].to(self.device), data[1].to(self.device)
                 out = self.model(img)
+                # print(out)
                 loss = self.loss_func(out, label)
 
                 self.optim.zero_grad()
@@ -55,10 +61,17 @@ class MyTrainer():
                         out = self.model(img)
                         acc = self.acc_func(out, label)
 
+                        if show_val:
+                            # 画图
+                            draw_img = img[0,:, :, :].cpu()
+                            draw_label = label[0,:,:].cpu()*(torch.ones(3*224*224).resize(3, 224, 224)*255)
+                            draw_pre = out[0,:,:].cpu()*(torch.ones(3*224*224).resize(3, 224, 224)*255)
+                            torchvision.utils.save_image(torch.stack([draw_img, draw_label, draw_pre], dim=0), home_dir+f'/show{epoch+1}.png')
+
                         num_acc += acc
                         num += 1
                 average_acc = num_acc/num
-                val_acc.append(average_acc)
+                val_acc.append(average_acc.cpu())
                 if print_log:
                     logger.info(f'val|epoch:{epoch+1}\t loss:{average_acc:.4f}')
                 else:
