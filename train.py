@@ -63,10 +63,12 @@ class MyTrainer():
 
                         if show_val:
                             # 画图
+                            if os.path.exists(home_dir+'/val_imgs'):
+                                os.mkdir(home_dir+'/val_imgs')
                             draw_img = img[0,:, :, :].cpu()
                             draw_label = label[0,:,:].cpu()*(torch.ones(3*224*224).resize(3, 224, 224)*255)
                             draw_pre = out[0,:,:].cpu()*(torch.ones(3*224*224).resize(3, 224, 224)*255)
-                            torchvision.utils.save_image(torch.stack([draw_img, draw_label, draw_pre], dim=0), home_dir+f'/show{epoch+1}.png')
+                            torchvision.utils.save_image(torch.stack([draw_img, draw_label, draw_pre], dim=0), home_dir+'/val_imgs'+f'/show{epoch+1}.png')
 
                         num_acc += acc
                         num += 1
