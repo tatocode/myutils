@@ -75,7 +75,7 @@ class MyTrainer():
                 average_acc = num_acc/num
                 val_acc.append(average_acc.cpu())
                 if print_log:
-                    logger.info(f'val|epoch:{epoch+1}\t loss:{average_acc:.4f}')
+                    logger.info(f'val|epoch:{epoch+1}\t acc:{average_acc:.4f}')
                 else:
                     print(f'{epoch+1}th epoch average acc: {average_acc:.4f}')
 
