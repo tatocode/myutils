@@ -12,6 +12,7 @@ class MyTrainer():
         self.val_loader = train_config_dict['val_loader']
         self.num_epochs = train_config_dict['num_epochs']
         self.optim = train_config_dict['optim']
+        self.sche = train_config_dict['sche']
         self.loss_func = train_config_dict['loss_func']
         self.acc_func = train_config_dict['acc_func']
         self.device = train_config_dict['device']
@@ -93,4 +94,6 @@ class MyTrainer():
                 save = 20
                 if epoch % save == 0:
                     torch.save(self.model.state_dict(), os.path.join(home_dir, f'weights/epoch_{epoch+1}.pth'))
+            if self.sche is not None:
+                self.sche.step()
         draw.draw_train_val_graph(train_loss, val_acc, home_dir)
