@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
-
+import datetime
 
 class DrawConfusionMatrix:
     def __init__(self, labels_name, normalize=True):
@@ -58,6 +58,26 @@ class DrawConfusionMatrix:
         plt.colorbar()  # 色条
         plt.savefig(file_name, bbox_inches='tight')  # bbox_inches='tight'可确保标签信息显示全
         plt.show()
+
+
+def get_datetime_str(style='dt'):
+    '''
+    获取当前时间字符串
+    :param style: 'dt':日期+时间；'date'：日期；'time'：时间
+    :return: 当前时间字符串
+    '''
+    cur_time = datetime.datetime.now()
+
+    date_str = cur_time.strftime('%y%m%d')
+    time_str = cur_time.strftime('%H%M%S')
+
+    if style == 'date':
+        return date_str
+    elif style == 'time':
+        return time_str
+    else:
+        return date_str + '_' + time_str
+
 
 # if __name__ == '__main__':
 #     label_name = ['cat', 'dog']
